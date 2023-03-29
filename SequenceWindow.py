@@ -11,7 +11,6 @@ class SequenceWindow(QWidget):
         super().__init__(parent)
         self.setGeometry(300, 300, 700, 400)
         self.setWindowTitle('Послідовність кардіоциклів')
-        self.ecg_cycle = ecg_cycle
         self.ecg_sequence = cs.CycleSequence(ecg_cycle, 30)
 
         # plot widgets
@@ -62,18 +61,22 @@ class SequenceWindow(QWidget):
         self.slider_alt_vlayout.addLayout(self.slider_alt_hlayout)
 
         self.slider_alt_label1 = QLabel()
+        self.slider_alt_label1.setText('-1')
         self.slider_alt_hlayout.addWidget(self.slider_alt_label1)
         
+        self.slider_alt.setMinimum(-100)
+        self.slider_alt.setMaximum(100)
         self.slider_alt.setSingleStep(1)
-        # self.slider_alt.setValue(np.ceil(self.get_wave_data(1)).astype(int))
-        # self.slider_alt.valueChanged.connect(self.update_mu)
+        self.slider_alt.setValue(0)
+        self.slider_alt.valueChanged.connect(self.update_alt)
         self.slider_alt_hlayout.addWidget(self.slider_alt)
         
         self.slider_alt_label2 = QLabel()
+        self.slider_alt_label2.setText('1')
         self.slider_alt_hlayout.addWidget(self.slider_alt_label2)
 
         self.slider_alt_value = QLabel()
-        # self.slider_alt_value.setText(f'[{np.ceil(self.get_wave_data(1)).astype(int)}]')
+        self.slider_alt_value.setText(f'[{self.slider_alt.value() / 100}]')
         self.slider_alt_vlayout.addWidget(self.slider_alt_value, alignment=Qt.AlignmentFlag.AlignCenter)
 
         grid.addWidget(self.slider_alt_group, 1, 1)
@@ -112,10 +115,19 @@ class SequenceWindow(QWidget):
     def on_update(self):
         """ Update the plot with the current input values """
 
-        self.ecg_sequence.construct_sequence()
         self.points.setData(self.ecg_sequence.time_seq / 1000, self.ecg_sequence.amp_seq)
 
     def update_n(self):
         n_new = int(self.n_input.value())
-        self.ecg_sequence = cs.CycleSequence(self.ecg_cycle, n_new)
+        self.ecg_sequence = cs.CycleSequence(self.ecg_sequence.ecg_cycle, n_new)
+        self.update_alt()
+
+    def update_alt(self):
+        alt = self.slider_alt.value() / 100
+        self.slider_alt_value.setText(f'[{alt}]')
+        self.ecg_sequence.alternate_t(alt)
         self.on_update()
+
+    def to_sequence(self, ecg_cycle):
+        self.ecg_sequence = cs.CycleSequence(ecg_cycle, self.ecg_sequence.n)
+        self.update_alt()
