@@ -5,6 +5,7 @@ import numpy as np
 
 import CycleModel as cm
 import SequenceWindow as sw
+import CycleSequence as cs
 
 class MainWindow(QMainWindow):
     def __init__(self, ecg_init, parent=None):
@@ -246,8 +247,7 @@ class MainWindow(QMainWindow):
         self.points.setData(self.ecg_cycle.time, self.ecg_cycle.amplitude)
 
         if hasattr(self, 'w_new'):
-            self.w_new.ecg_cycle = self.ecg_cycle
-            self.w_new.on_update()
+            self.w_new.to_sequence(self.ecg_cycle)
 
     def update_fh(self):
         Fh_new = self.wid.fh_input.value()
