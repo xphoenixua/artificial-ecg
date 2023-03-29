@@ -3,28 +3,28 @@ import numpy as np
 class CycleSequence:
 
     def __init__(self, ecg_cycle, n):
-        self.Fh = ecg_cycle.Fh
-        self.waves = ecg_cycle.waves
+        self.ecg_cycle = ecg_cycle
+        self.new_t0 = self.ecg_cycle.time[-1]
         self.n = n
-        t0 = (60 * 1000 / self.Fh) * self.n
-        self.time_seq = np.arange(0, t0 + ecg_cycle.Ts, ecg_cycle.Ts)
-        self.amp_cycle = ecg_cycle.amplitude
-
-    def update_wave(self, w, data):
-        self.waves[w] = data
-
-    def construct_cycle(self):
-        self.amplitude = np.zeros(self.time.shape[0])
-        for w in self.waves:
-            params = self.waves[w]
-            a, mu, b1, b2 = params[0], params[1], params[2], params[3]
-            t1 = (np.abs(self.time - (mu - 3*b1))).argmin()
-            t2 = (np.abs(self.time - (mu + 3*b2))).argmin()
-            self.waves[w][4], self.waves[w][5] = t1, t2
-            interval_1 = self.time[t1:np.floor(mu/self.Ts).astype(int)+1]
-            interval_2 = self.time[np.floor(mu/self.Ts).astype(int)+1:t2]
-            self.amplitude[t1:np.floor(mu/self.Ts).astype(int)+1] = a * np.exp(-(np.square(interval_1 - mu) / (2*np.square(b1))))
-            self.amplitude[np.floor(mu/self.Ts).astype(int)+1:t2] = a * np.exp(-(np.square(interval_2 - mu) / (2*np.square(b2))))
+        self.time_seq = np.arange(0, self.new_t0 * self.n + self.ecg_cycle.Ts, self.ecg_cycle.Ts)
+        self.amp_seq = np.concatenate((np.tile(self.ecg_cycle.amplitude[:-1], self.n), np.array([0])), axis=0)
     
+    def alternate_t(self, alt):
+        params = self.ecg_cycle.waves['T']
+        a, mu, b1, b2 = params[0], params[1], params[2], params[3]
+        lmbd_prev = 1
+        for t_i in range(0, self.n):
+            t1_1, t1_2 = params[4] + int(t_i * self.new_t0 / self.ecg_cycle.Ts), params[5] + int(t_i * self.new_t0 / self.ecg_cycle.Ts)
+            t2_1, t2_2 = params[6] + int(t_i * self.new_t0 / self.ecg_cycle.Ts), params[7] + int(t_i * self.new_t0 / self.ecg_cycle.Ts)
+            if lmbd_prev == 1:
+                lmbd = 1 + alt / a
+            elif lmbd_prev == (1 + alt / a):
+                lmbd = 1
+            interval_1 = self.time_seq[t1_1:t1_2+1]
+            interval_2 = self.time_seq[t2_1+1:t2_2]
+            self.amp_seq[t1_1:t1_2+1] = (a * lmbd) * np.exp(-(np.square(interval_1 - (mu + t_i * self.new_t0)) / (2*np.square(b1))))
+            self.amp_seq[t2_1+1:t2_2] = (a * lmbd) * np.exp(-(np.square(interval_2 - (mu + t_i * self.new_t0)) / (2*np.square(b2))))
+            lmbd_prev = lmbd
+
     def construct_sequence(self):
-        self.amp_seq = np.concatenate((np.tile(self.amp_cycle[:-1], self.n), np.array([0])), axis=0)
+        self.amp_seq = np.concatenate((np.tile(self.ecg_cycle.amplitude[:-1], self.n), np.array([0])), axis=0)
