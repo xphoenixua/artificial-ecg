@@ -6,12 +6,9 @@ class CycleModel:
 
     def __init__(self, Fh, waves):
         self.Fh = Fh # частота серцевих скорочень в уд./хв.
-        t0 = 60 * 1000 / self.Fh # тривалість 1 циклу
-        self.time = np.arange(0, t0 + self.Ts, self.Ts) # ряд значень часової шкали 1 циклу із кроком періоду дискретизації
+        self.t0 = 60 * 1000 / self.Fh # тривалість 1 циклу
+        self.time = np.arange(0, self.t0 + self.Ts, self.Ts) # ряд значень часової шкали 1 циклу із кроком періоду дискретизації
         self.waves = waves
-        
-    def update_wave(self, w, data):
-        self.waves[w] = data
 
     def construct_cycle(self):
         self.amplitude = np.zeros(self.time.shape[0])
@@ -20,11 +17,14 @@ class CycleModel:
             a, mu, b1, b2 = params[0], params[1], params[2], params[3]
             t1 = (np.abs(self.time - (mu - 3*b1))).argmin()
             t2 = (np.abs(self.time - (mu + 3*b2))).argmin()
-            self.waves[w][4], self.waves[w][5] = t1, t2
-            interval_1 = self.time[t1:np.floor(mu/self.Ts).astype(int)+1]
-            interval_2 = self.time[np.floor(mu/self.Ts).astype(int)+1:t2]
-            self.amplitude[t1:np.floor(mu/self.Ts).astype(int)+1] = a * np.exp(-(np.square(interval_1 - mu) / (2*np.square(b1))))
-            self.amplitude[np.floor(mu/self.Ts).astype(int)+1:t2] = a * np.exp(-(np.square(interval_2 - mu) / (2*np.square(b2))))
+            t1_1, t1_2 = t1, np.floor(mu/self.Ts).astype(int)
+            t2_1, t2_2 = np.floor(mu/self.Ts).astype(int), t2
+            self.waves[w][4], self.waves[w][5] = t1_1, t1_2
+            self.waves[w][6], self.waves[w][7] = t2_1, t2_2
+            interval_1 = self.time[t1_1:t1_2+1]
+            interval_2 = self.time[t2_1+1:t2_2]
+            self.amplitude[t1_1:t1_2+1] = a * np.exp(-(np.square(interval_1 - mu) / (2*np.square(b1))))
+            self.amplitude[t2_1+1:t2_2] = a * np.exp(-(np.square(interval_2 - mu) / (2*np.square(b2))))
 
     def get_t_lims(self, w):
         temp = list(self.waves)
@@ -32,9 +32,9 @@ class CycleModel:
         if w == 'P':
             t_prev, t_next = 0, self.waves[temp[temp.index(w) + 1]][4]
         elif w == 'T':
-            t_prev, t_next = self.waves[temp[temp.index(w) - 1]][5], int(self.time[-1] / self.Ts)
+            t_prev, t_next = self.waves[temp[temp.index(w) - 1]][7], int(self.time[-1] / self.Ts)
         else:
-            t_prev, t_next = self.waves[temp[temp.index(w) - 1]][5], self.waves[temp[temp.index(w) + 1]][4]
+            t_prev, t_next = self.waves[temp[temp.index(w) - 1]][7], self.waves[temp[temp.index(w) + 1]][4]
         
         return t_prev, t_next
 
@@ -108,10 +108,12 @@ class CycleModel:
     def fh_normalization(self, Fh_new):
         for w in self.waves:
             params = self.waves[w]
-            mu, b1, b2, t1, t2 = params[1], params[2], params[3], params[4], params[5]
+            mu, b1, b2, t1_1, t1_2, t2_1, t2_2 = params[1], params[2], params[3], params[4], params[5], params[6], params[7]
             
             self.waves[w][1] = mu * self.Fh / Fh_new
             self.waves[w][2] = b1 * self.Fh / Fh_new
             self.waves[w][3] = b2 * self.Fh / Fh_new
-            self.waves[w][4] = t1 * self.Fh / Fh_new
-            self.waves[w][5] = t2 * self.Fh / Fh_new
+            self.waves[w][4] = t1_1 * self.Fh / Fh_new
+            self.waves[w][5] = t1_2 * self.Fh / Fh_new
+            self.waves[w][6] = t2_1 * self.Fh / Fh_new
+            self.waves[w][7] = t2_2 * self.Fh / Fh_new
