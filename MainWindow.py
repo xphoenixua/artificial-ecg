@@ -10,8 +10,8 @@ import CycleSequence as cs
 class MainWindow(QMainWindow):
     def __init__(self, ecg_init, parent=None):
         super().__init__(parent)
-        self.wid = QWidget(self)
-        self.setCentralWidget(self.wid)
+        self.widget = QWidget(self)
+        self.setCentralWidget(self.widget)
         self.setWindowTitle('Модель кардіоцикла')
         self.ecg_cycle = ecg_init
 
@@ -19,217 +19,217 @@ class MainWindow(QMainWindow):
 
         grid = QGridLayout()
 
-        self.wid.setLayout(grid)
+        self.widget.setLayout(grid)
                 
-        self.wid.graphWidget = pg.PlotWidget()
-        self.wid.graphWidget.setTitle('Цикл серцевого скорочення', color='black', size='18pt')
-        self.wid.graphWidget.setLabel(axis='bottom', text='Час (мс)', color='black')
-        self.wid.graphWidget.setLabel(axis='left', text='Амплітуда (мВ)', color='black')
-        self.wid.graphWidget.setMenuEnabled()
-        self.wid.graphWidget.setBackground('w')
-        self.wid.graphWidget.showButtons()
-        self.wid.graphWidget.showGrid(x=True, y=True, alpha=1)
+        self.widget.graphWidget = pg.PlotWidget()
+        self.widget.graphWidget.setTitle('Цикл серцевого скорочення', color='black', size='18pt')
+        self.widget.graphWidget.setLabel(axis='bottom', text='Час (мс)', color='black')
+        self.widget.graphWidget.setLabel(axis='left', text='Амплітуда (мВ)', color='black')
+        self.widget.graphWidget.setMenuEnabled()
+        self.widget.graphWidget.setBackground('w')
+        self.widget.graphWidget.showButtons()
+        self.widget.graphWidget.showGrid(x=True, y=True, alpha=1)
         pen = pg.mkPen(color="k", width=2.5, style=Qt.PenStyle.SolidLine)
-        self.points = self.wid.graphWidget.plot(pen=pen)
+        self.points = self.widget.graphWidget.plot(pen=pen)
 
-        grid.addWidget(self.wid.graphWidget, 0, 0, 3, 1)
+        grid.addWidget(self.widget.graphWidget, 0, 0, 3, 1)
 
         # generation button
 
-        self.wid.button = QPushButton('Генерація')
-        self.wid.button.clicked.connect(self.show_new_window)
-        grid.addWidget(self.wid.button, 0, 1, Qt.AlignmentFlag.AlignTop)
+        self.widget.button = QPushButton('Генерація')
+        self.widget.button.clicked.connect(self.show_new_window)
+        grid.addWidget(self.widget.button, 0, 1, Qt.AlignmentFlag.AlignTop)
 
         # waves radio buttons
 
-        self.wid.radio_group = QGroupBox()
-        self.wid.radio_layout = QVBoxLayout()
-        self.wid.radio_group.setLayout(self.wid.radio_layout)
-        self.wid.radio_group.setTitle('Зубець')
-        self.wid.radio_group.setFixedHeight(250)
+        self.widget.radio_group = QGroupBox()
+        self.widget.radio_layout = QVBoxLayout()
+        self.widget.radio_group.setLayout(self.widget.radio_layout)
+        self.widget.radio_group.setTitle('Зубець')
+        self.widget.radio_group.setFixedHeight(250)
 
-        self.wid.radiobutton = QRadioButton('P')
-        self.wid.radiobutton.wave = 'P'
-        self.wid.radiobutton.toggled.connect(self.on_clicked)
-        self.wid.radio_layout.addWidget(self.wid.radiobutton)
+        self.widget.radiobutton = QRadioButton('P')
+        self.widget.radiobutton.wave = 'P'
+        self.widget.radiobutton.toggled.connect(self.on_clicked)
+        self.widget.radio_layout.addWidget(self.widget.radiobutton)
 
-        self.wid.radiobutton = QRadioButton('Q')
-        self.wid.radiobutton.wave = 'Q'
-        self.wid.radiobutton.toggled.connect(self.on_clicked)
-        self.wid.radio_layout.addWidget(self.wid.radiobutton)
+        self.widget.radiobutton = QRadioButton('Q')
+        self.widget.radiobutton.wave = 'Q'
+        self.widget.radiobutton.toggled.connect(self.on_clicked)
+        self.widget.radio_layout.addWidget(self.widget.radiobutton)
 
-        self.wid.radiobutton = QRadioButton('R')
-        self.wid.radiobutton.wave = 'R'
-        self.wid.radiobutton.toggled.connect(self.on_clicked)
-        self.wid.radio_layout.addWidget(self.wid.radiobutton)
+        self.widget.radiobutton = QRadioButton('R')
+        self.widget.radiobutton.wave = 'R'
+        self.widget.radiobutton.toggled.connect(self.on_clicked)
+        self.widget.radio_layout.addWidget(self.widget.radiobutton)
         
-        self.wid.radiobutton = QRadioButton('S')
-        self.wid.radiobutton.wave = 'S'
-        self.wid.radiobutton.toggled.connect(self.on_clicked)
-        self.wid.radio_layout.addWidget(self.wid.radiobutton)
+        self.widget.radiobutton = QRadioButton('S')
+        self.widget.radiobutton.wave = 'S'
+        self.widget.radiobutton.toggled.connect(self.on_clicked)
+        self.widget.radio_layout.addWidget(self.widget.radiobutton)
         
-        self.wid.radiobutton = QRadioButton('ST')
-        self.wid.radiobutton.wave = 'ST'
-        self.wid.radiobutton.toggled.connect(self.on_clicked)
-        self.wid.radio_layout.addWidget(self.wid.radiobutton)
+        self.widget.radiobutton = QRadioButton('ST')
+        self.widget.radiobutton.wave = 'ST'
+        self.widget.radiobutton.toggled.connect(self.on_clicked)
+        self.widget.radio_layout.addWidget(self.widget.radiobutton)
         
-        self.wid.radiobutton = QRadioButton('T')
-        self.wid.radiobutton.wave = 'T'
-        self.wid.radiobutton.toggled.connect(self.on_clicked)
-        self.wid.radiobutton.setChecked(True)
-        self.wid.radio_layout.addWidget(self.wid.radiobutton)
+        self.widget.radiobutton = QRadioButton('T')
+        self.widget.radiobutton.wave = 'T'
+        self.widget.radiobutton.toggled.connect(self.on_clicked)
+        self.widget.radiobutton.setChecked(True)
+        self.widget.radio_layout.addWidget(self.widget.radiobutton)
 
-        grid.addWidget(self.wid.radio_group, 1, 1, Qt.AlignmentFlag.AlignVCenter)
+        grid.addWidget(self.widget.radio_group, 1, 1, Qt.AlignmentFlag.AlignVCenter)
 
         # Fh spinbox
         
-        self.wid.fh_group = QGroupBox()
-        self.wid.fh_layout = QHBoxLayout()
-        self.wid.fh_group.setLayout(self.wid.fh_layout)
-        self.wid.fh_group.setFixedWidth(70)
-        self.wid.fh_group.setFixedHeight(60)
-        self.wid.fh_group.setTitle('FH [уд./хв]')
+        self.widget.fh_group = QGroupBox()
+        self.widget.fh_layout = QHBoxLayout()
+        self.widget.fh_group.setLayout(self.widget.fh_layout)
+        self.widget.fh_group.setFixedWidth(70)
+        self.widget.fh_group.setFixedHeight(60)
+        self.widget.fh_group.setTitle('FH [уд./хв]')
 
-        self.wid.fh_input = QSpinBox()
-        self.wid.fh_input.setMinimum(30)
-        self.wid.fh_input.setMaximum(150)
-        self.wid.fh_input.setValue(self.ecg_cycle.Fh)
-        self.wid.fh_input.valueChanged.connect(self.update_fh)
-        self.wid.fh_input.setKeyboardTracking(False)
-        self.wid.fh_layout.addWidget(self.wid.fh_input)
+        self.widget.fh_input = QSpinBox()
+        self.widget.fh_input.setMinimum(30)
+        self.widget.fh_input.setMaximum(150)
+        self.widget.fh_input.setValue(self.ecg_cycle.Fh)
+        self.widget.fh_input.valueChanged.connect(self.update_fh)
+        self.widget.fh_input.setKeyboardTracking(False)
+        self.widget.fh_layout.addWidget(self.widget.fh_input)
         
-        grid.addWidget(self.wid.fh_group, 2, 1, Qt.AlignmentFlag.AlignHCenter)
+        grid.addWidget(self.widget.fh_group, 2, 1, Qt.AlignmentFlag.AlignHCenter)
         
         # a and mu grid
 
-        self.wid.slider_a_mu_hlayout = QHBoxLayout()
+        self.widget.slider_a_mu_hlayout = QHBoxLayout()
 
         # amplitude slider
 
-        self.wid.slider_a = QSlider(Qt.Orientation.Horizontal)
+        self.widget.slider_a = QSlider(Qt.Orientation.Horizontal)
         
-        self.wid.slider_a_group = QGroupBox()
-        self.wid.slider_a_group.setTitle('Амплітуда (мВ)')
+        self.widget.slider_a_group = QGroupBox()
+        self.widget.slider_a_group.setTitle('Амплітуда (мВ)')
         
-        self.wid.slider_a_vlayout = QVBoxLayout()
-        self.wid.slider_a_group.setLayout(self.wid.slider_a_vlayout)
-        self.wid.slider_a_hlayout = QHBoxLayout()
-        self.wid.slider_a_vlayout.addLayout(self.wid.slider_a_hlayout)
+        self.widget.slider_a_vlayout = QVBoxLayout()
+        self.widget.slider_a_group.setLayout(self.widget.slider_a_vlayout)
+        self.widget.slider_a_hlayout = QHBoxLayout()
+        self.widget.slider_a_vlayout.addLayout(self.widget.slider_a_hlayout)
 
-        self.wid.slider_a_label1 = QLabel()
-        self.wid.slider_a_label1.setText('-1')
-        self.wid.slider_a_hlayout.addWidget(self.wid.slider_a_label1)
+        self.widget.slider_a_label1 = QLabel()
+        self.widget.slider_a_label1.setText('-1')
+        self.widget.slider_a_hlayout.addWidget(self.widget.slider_a_label1)
         
-        self.wid.slider_a.setMinimum(-100)
-        self.wid.slider_a.setMaximum(100)
-        self.wid.slider_a.setSingleStep(1)
-        self.wid.slider_a.setValue(np.ceil(self.get_wave_data(0) * 100).astype(int))
-        self.wid.slider_a.valueChanged.connect(self.update_a)
-        self.wid.slider_a_hlayout.addWidget(self.wid.slider_a)
+        self.widget.slider_a.setMinimum(-100)
+        self.widget.slider_a.setMaximum(100)
+        self.widget.slider_a.setSingleStep(1)
+        self.widget.slider_a.setValue(np.ceil(self.get_wave_data(0) * 100).astype(int))
+        self.widget.slider_a.valueChanged.connect(self.update_a)
+        self.widget.slider_a_hlayout.addWidget(self.widget.slider_a)
         
-        self.wid.slider_a_label2 = QLabel()
-        self.wid.slider_a_label2.setText('1')
-        self.wid.slider_a_hlayout.addWidget(self.wid.slider_a_label2)
+        self.widget.slider_a_label2 = QLabel()
+        self.widget.slider_a_label2.setText('1')
+        self.widget.slider_a_hlayout.addWidget(self.widget.slider_a_label2)
 
-        self.wid.slider_a_value = QLabel()
-        self.wid.slider_a_value.setText(f'[{np.ceil(self.get_wave_data(0) * 100).astype(int)}]')
-        self.wid.slider_a_vlayout.addWidget(self.wid.slider_a_value, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.widget.slider_a_value = QLabel()
+        self.widget.slider_a_value.setText(f'[{np.ceil(self.get_wave_data(0) * 100).astype(int)}]')
+        self.widget.slider_a_vlayout.addWidget(self.widget.slider_a_value, alignment=Qt.AlignmentFlag.AlignCenter)
         
-        self.wid.slider_a_mu_hlayout.addWidget(self.wid.slider_a_group)
+        self.widget.slider_a_mu_hlayout.addWidget(self.widget.slider_a_group)
 
         # mean slider
 
-        self.wid.slider_mu = QSlider(Qt.Orientation.Horizontal)
+        self.widget.slider_mu = QSlider(Qt.Orientation.Horizontal)
         
-        self.wid.slider_mu_group = QGroupBox()
-        self.wid.slider_mu_group.setTitle('Середнє (мс)')
+        self.widget.slider_mu_group = QGroupBox()
+        self.widget.slider_mu_group.setTitle('Середнє (мс)')
 
-        self.wid.slider_mu_vlayout = QVBoxLayout()
-        self.wid.slider_mu_group.setLayout(self.wid.slider_mu_vlayout)
-        self.wid.slider_mu_hlayout = QHBoxLayout()
-        self.wid.slider_mu_vlayout.addLayout(self.wid.slider_mu_hlayout)
+        self.widget.slider_mu_vlayout = QVBoxLayout()
+        self.widget.slider_mu_group.setLayout(self.widget.slider_mu_vlayout)
+        self.widget.slider_mu_hlayout = QHBoxLayout()
+        self.widget.slider_mu_vlayout.addLayout(self.widget.slider_mu_hlayout)
 
-        self.wid.slider_mu_label1 = QLabel()
-        self.wid.slider_mu_hlayout.addWidget(self.wid.slider_mu_label1)
+        self.widget.slider_mu_label1 = QLabel()
+        self.widget.slider_mu_hlayout.addWidget(self.widget.slider_mu_label1)
         
-        self.wid.slider_mu.setSingleStep(1)
-        self.wid.slider_mu.setValue(np.ceil(self.get_wave_data(1)).astype(int))
-        self.wid.slider_mu.valueChanged.connect(self.update_mu)
-        self.wid.slider_mu_hlayout.addWidget(self.wid.slider_mu)
+        self.widget.slider_mu.setSingleStep(1)
+        self.widget.slider_mu.setValue(np.ceil(self.get_wave_data(1)).astype(int))
+        self.widget.slider_mu.valueChanged.connect(self.update_mu)
+        self.widget.slider_mu_hlayout.addWidget(self.widget.slider_mu)
         
-        self.wid.slider_mu_label2 = QLabel()
-        self.wid.slider_mu_hlayout.addWidget(self.wid.slider_mu_label2)
+        self.widget.slider_mu_label2 = QLabel()
+        self.widget.slider_mu_hlayout.addWidget(self.widget.slider_mu_label2)
 
-        self.wid.slider_mu_value = QLabel()
-        self.wid.slider_mu_value.setText(f'[{np.ceil(self.get_wave_data(1)).astype(int)}]')
-        self.wid.slider_mu_vlayout.addWidget(self.wid.slider_mu_value, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.widget.slider_mu_value = QLabel()
+        self.widget.slider_mu_value.setText(f'[{np.ceil(self.get_wave_data(1)).astype(int)}]')
+        self.widget.slider_mu_vlayout.addWidget(self.widget.slider_mu_value, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        self.wid.slider_a_mu_hlayout.addWidget(self.wid.slider_mu_group)
+        self.widget.slider_a_mu_hlayout.addWidget(self.widget.slider_mu_group)
 
         # a and mu grid
 
-        grid.addLayout(self.wid.slider_a_mu_hlayout, 3, 0, 1, 2)
+        grid.addLayout(self.widget.slider_a_mu_hlayout, 3, 0, 1, 2)
 
         # b group
 
-        self.wid.slider_b_group = QGroupBox()
-        self.wid.slider_b_hlayout = QHBoxLayout()
-        self.wid.slider_b_group.setLayout(self.wid.slider_b_hlayout)
-        self.wid.slider_b_group.setTitle('Середньоквадратичне (мс)')
+        self.widget.slider_b_group = QGroupBox()
+        self.widget.slider_b_hlayout = QHBoxLayout()
+        self.widget.slider_b_group.setLayout(self.widget.slider_b_hlayout)
+        self.widget.slider_b_group.setTitle('Середньоквадратичне (мс)')
 
         # b1 slider
         
-        self.wid.slider_b1_group = QGroupBox()
-        self.wid.slider_b1_group.setTitle('b1')
+        self.widget.slider_b1_group = QGroupBox()
+        self.widget.slider_b1_group.setTitle('b1')
 
-        self.wid.slider_b1_vlayout = QVBoxLayout()
-        self.wid.slider_b1_group.setLayout(self.wid.slider_b1_vlayout)
-        self.wid.slider_b1_hlayout = QHBoxLayout()
-        self.wid.slider_b1_vlayout.addLayout(self.wid.slider_b1_hlayout)
+        self.widget.slider_b1_vlayout = QVBoxLayout()
+        self.widget.slider_b1_group.setLayout(self.widget.slider_b1_vlayout)
+        self.widget.slider_b1_hlayout = QHBoxLayout()
+        self.widget.slider_b1_vlayout.addLayout(self.widget.slider_b1_hlayout)
 
-        self.wid.slider_b1_label1 = QLabel()
-        self.wid.slider_b1_hlayout.addWidget(self.wid.slider_b1_label1)
+        self.widget.slider_b1_label1 = QLabel()
+        self.widget.slider_b1_hlayout.addWidget(self.widget.slider_b1_label1)
         
-        self.wid.slider_b1 = QSlider(Qt.Orientation.Horizontal)
-        self.wid.slider_b1.setSingleStep(1)
-        self.wid.slider_b1.valueChanged.connect(self.update_b1)
-        self.wid.slider_b1_hlayout.addWidget(self.wid.slider_b1)
+        self.widget.slider_b1 = QSlider(Qt.Orientation.Horizontal)
+        self.widget.slider_b1.setSingleStep(1)
+        self.widget.slider_b1.valueChanged.connect(self.update_b1)
+        self.widget.slider_b1_hlayout.addWidget(self.widget.slider_b1)
         
-        self.wid.slider_b1_label2 = QLabel()
-        self.wid.slider_b1_hlayout.addWidget(self.wid.slider_b1_label2)
+        self.widget.slider_b1_label2 = QLabel()
+        self.widget.slider_b1_hlayout.addWidget(self.widget.slider_b1_label2)
 
-        self.wid.slider_b1_value = QLabel()
-        self.wid.slider_b1_vlayout.addWidget(self.wid.slider_b1_value, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.widget.slider_b1_value = QLabel()
+        self.widget.slider_b1_vlayout.addWidget(self.widget.slider_b1_value, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        self.wid.slider_b_hlayout.addWidget(self.wid.slider_b1_group)
+        self.widget.slider_b_hlayout.addWidget(self.widget.slider_b1_group)
 
         # b2 slider
         
-        self.wid.slider_b2_group = QGroupBox()
-        self.wid.slider_b2_group.setTitle('b2')
+        self.widget.slider_b2_group = QGroupBox()
+        self.widget.slider_b2_group.setTitle('b2')
 
-        self.wid.slider_b2_vlayout = QVBoxLayout()
-        self.wid.slider_b2_group.setLayout(self.wid.slider_b2_vlayout)
-        self.wid.slider_b2_hlayout = QHBoxLayout()
-        self.wid.slider_b2_vlayout.addLayout(self.wid.slider_b2_hlayout)
+        self.widget.slider_b2_vlayout = QVBoxLayout()
+        self.widget.slider_b2_group.setLayout(self.widget.slider_b2_vlayout)
+        self.widget.slider_b2_hlayout = QHBoxLayout()
+        self.widget.slider_b2_vlayout.addLayout(self.widget.slider_b2_hlayout)
 
-        self.wid.slider_b2_label1 = QLabel()
-        self.wid.slider_b2_hlayout.addWidget(self.wid.slider_b2_label1)
+        self.widget.slider_b2_label1 = QLabel()
+        self.widget.slider_b2_hlayout.addWidget(self.widget.slider_b2_label1)
         
-        self.wid.slider_b2 = QSlider(Qt.Orientation.Horizontal)
-        self.wid.slider_b2.setSingleStep(1)
-        self.wid.slider_b2.valueChanged.connect(self.update_b2)
-        self.wid.slider_b2_hlayout.addWidget(self.wid.slider_b2)
+        self.widget.slider_b2 = QSlider(Qt.Orientation.Horizontal)
+        self.widget.slider_b2.setSingleStep(1)
+        self.widget.slider_b2.valueChanged.connect(self.update_b2)
+        self.widget.slider_b2_hlayout.addWidget(self.widget.slider_b2)
         
-        self.wid.slider_b2_label2 = QLabel()
-        self.wid.slider_b2_hlayout.addWidget(self.wid.slider_b2_label2)
+        self.widget.slider_b2_label2 = QLabel()
+        self.widget.slider_b2_hlayout.addWidget(self.widget.slider_b2_label2)
 
-        self.wid.slider_b2_value = QLabel()
-        self.wid.slider_b2_vlayout.addWidget(self.wid.slider_b2_value, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.widget.slider_b2_value = QLabel()
+        self.widget.slider_b2_vlayout.addWidget(self.widget.slider_b2_value, alignment=Qt.AlignmentFlag.AlignCenter)
 
-        self.wid.slider_b_hlayout.addWidget(self.wid.slider_b2_group)
+        self.widget.slider_b_hlayout.addWidget(self.widget.slider_b2_group)
         
-        grid.addWidget(self.wid.slider_b_group, 4, 0, 1, 2)
+        grid.addWidget(self.widget.slider_b_group, 4, 0, 1, 2)
         
         self.update_sliders()
         self.on_update()
@@ -250,7 +250,7 @@ class MainWindow(QMainWindow):
             self.w_new.to_sequence(self.ecg_cycle)
 
     def update_fh(self):
-        Fh_new = self.wid.fh_input.value()
+        Fh_new = self.widget.fh_input.value()
         self.ecg_cycle.fh_normalization(Fh_new)
         waves_new = self.ecg_cycle.waves
         self.ecg_cycle = cm.CycleModel(Fh_new, waves_new)
@@ -258,69 +258,69 @@ class MainWindow(QMainWindow):
         self.on_update()
 
     def update_a(self):
-        self.set_wave_data(self.wid.slider_a.value() / 100, 0)
-        self.wid.slider_a_value.setText(f'[{self.wid.slider_a.value() / 100}]')
+        self.set_wave_data(self.widget.slider_a.value() / 100, 0)
+        self.widget.slider_a_value.setText(f'[{self.widget.slider_a.value() / 100}]')
         self.on_update()
     
     def update_mu(self):
-        self.set_wave_data(self.wid.slider_mu.value(), 1)
+        self.set_wave_data(self.widget.slider_mu.value(), 1)
         self.set_b_range()
-        self.wid.slider_mu_value.setText(f'[{self.wid.slider_mu.value()}]')
+        self.widget.slider_mu_value.setText(f'[{self.widget.slider_mu.value()}]')
         self.on_update()
     
     def update_b1(self):
-        self.set_wave_data(self.wid.slider_b1.value(), 2)
+        self.set_wave_data(self.widget.slider_b1.value(), 2)
         self.set_mu_range()
-        self.wid.slider_b1_value.setText(f'[{self.wid.slider_b1.value()}]')
+        self.widget.slider_b1_value.setText(f'[{self.widget.slider_b1.value()}]')
         self.on_update()
     
     def update_b2(self):
-        self.set_wave_data(self.wid.slider_b2.value(), 3)
+        self.set_wave_data(self.widget.slider_b2.value(), 3)
         self.set_mu_range()
-        self.wid.slider_b2_value.setText(f'[{self.wid.slider_b2.value()}]')
+        self.widget.slider_b2_value.setText(f'[{self.widget.slider_b2.value()}]')
         self.on_update()
 
     def update_sliders(self):
-        if hasattr(self.wid, 'slider_a'):
+        if hasattr(self.widget, 'slider_a'):
             self.block_signals(True)
-            self.wid.slider_a.setValue(np.ceil(self.get_wave_data(0) * 100).astype(int))
-            self.wid.slider_a_value.setText(f'[{self.wid.slider_a.value() / 100}]')
+            self.widget.slider_a.setValue(np.ceil(self.get_wave_data(0) * 100).astype(int))
+            self.widget.slider_a_value.setText(f'[{self.widget.slider_a.value() / 100}]')
             self.set_mu_range()
-            self.wid.slider_mu.setValue(np.ceil(self.get_wave_data(1)).astype(int))
-            self.wid.slider_mu_value.setText(f'[{self.wid.slider_mu.value()}]')
+            self.widget.slider_mu.setValue(np.ceil(self.get_wave_data(1)).astype(int))
+            self.widget.slider_mu_value.setText(f'[{self.widget.slider_mu.value()}]')
             self.set_b_range()
-            self.wid.slider_b1.setValue(np.ceil(self.get_wave_data(2)).astype(int))
-            self.wid.slider_b1_value.setText(f'[{self.wid.slider_b1.value()}]')
-            self.wid.slider_b2.setValue(np.ceil(self.get_wave_data(3)).astype(int))
-            self.wid.slider_b2_value.setText(f'[{self.wid.slider_b2.value()}]')
+            self.widget.slider_b1.setValue(np.ceil(self.get_wave_data(2)).astype(int))
+            self.widget.slider_b1_value.setText(f'[{self.widget.slider_b1.value()}]')
+            self.widget.slider_b2.setValue(np.ceil(self.get_wave_data(3)).astype(int))
+            self.widget.slider_b2_value.setText(f'[{self.widget.slider_b2.value()}]')
             self.block_signals(False)
         else:
             return
 
     def set_mu_range(self):
-        if hasattr(self.wid, 'slider_mu'):
+        if hasattr(self.widget, 'slider_mu'):
             m_b, m_e = self.ecg_cycle.find_range_mu(self.active_radio.wave)
-            self.wid.slider_mu.setMinimum(m_b)
-            self.wid.slider_mu.setMaximum(m_e)
-            self.wid.slider_mu_label1.setText(f'{m_b}')
-            self.wid.slider_mu_label2.setText(f'{m_e}')
+            self.widget.slider_mu.setMinimum(m_b)
+            self.widget.slider_mu.setMaximum(m_e)
+            self.widget.slider_mu_label1.setText(f'{m_b}')
+            self.widget.slider_mu_label2.setText(f'{m_e}')
         else:
             return
 
     def set_b_range(self):
-        if hasattr(self.wid, 'slider_b1'):
+        if hasattr(self.widget, 'slider_b1'):
             b1_b, b1_e = self.ecg_cycle.find_range_b1(self.active_radio.wave)
             b2_b, b2_e = self.ecg_cycle.find_range_b2(self.active_radio.wave)
             
-            self.wid.slider_b1.setMinimum(b1_b)
-            self.wid.slider_b1.setMaximum(b1_e)
-            self.wid.slider_b1_label1.setText(f'{b1_b}')
-            self.wid.slider_b1_label2.setText(f'{b1_e}')
+            self.widget.slider_b1.setMinimum(b1_b)
+            self.widget.slider_b1.setMaximum(b1_e)
+            self.widget.slider_b1_label1.setText(f'{b1_b}')
+            self.widget.slider_b1_label2.setText(f'{b1_e}')
             
-            self.wid.slider_b2.setMinimum(b2_b)
-            self.wid.slider_b2.setMaximum(b2_e)
-            self.wid.slider_b2_label1.setText(f'{b2_b}')
-            self.wid.slider_b2_label2.setText(f'{b2_e}')
+            self.widget.slider_b2.setMinimum(b2_b)
+            self.widget.slider_b2.setMaximum(b2_e)
+            self.widget.slider_b2_label1.setText(f'{b2_b}')
+            self.widget.slider_b2_label2.setText(f'{b2_e}')
         else:
             return
 
@@ -332,13 +332,13 @@ class MainWindow(QMainWindow):
 
     def block_signals(self, block):
         if block:
-            self.wid.slider_mu.blockSignals(True)
-            self.wid.slider_b1.blockSignals(True)
-            self.wid.slider_b2.blockSignals(True)
+            self.widget.slider_mu.blockSignals(True)
+            self.widget.slider_b1.blockSignals(True)
+            self.widget.slider_b2.blockSignals(True)
         elif not block:
-            self.wid.slider_mu.blockSignals(False)
-            self.wid.slider_b1.blockSignals(False)
-            self.wid.slider_b2.blockSignals(False)
+            self.widget.slider_mu.blockSignals(False)
+            self.widget.slider_b1.blockSignals(False)
+            self.widget.slider_b2.blockSignals(False)
 
     def show_new_window(self, checked):
         self.w_new = sw.SequenceWindow(self.ecg_cycle)
