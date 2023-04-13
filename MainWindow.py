@@ -1,11 +1,13 @@
 from PyQt6.QtCore import *
 from PyQt6.QtWidgets import *
+from PyQt6.QtGui import *
 import pyqtgraph as pg
 import numpy as np
 
 import CycleModel as cm
 import SequenceWindow as sw
 import CycleSequence as cs
+import PhaseWindow as pw
 
 class MainWindow(QMainWindow):
     def __init__(self, ecg_init, parent=None):
@@ -15,14 +17,30 @@ class MainWindow(QMainWindow):
         self.setWindowTitle('Модель кардіоцикла')
         self.ecg_cycle = ecg_init
 
+        # menu bar
+
+        menu = QMenuBar(self)
+        self.setMenuBar(menu)
+        menu_file = QMenu('&Файл', self)
+        menu.addMenu(menu_file)
+
+        open_action = QAction("&Відкрити...", self)
+        menu_file.addAction(open_action)
+        open_action.triggered.connect(self.open_file)
+
+        exit_action = QAction("&Вихід", self)
+        menu_file.addAction(exit_action)
+        exit_action.triggered.connect(self.exit_window)
+
         # plot widgets
 
         grid = QGridLayout()
 
         self.widget.setLayout(grid)
-                
+        
+        # pg.setConfigOptions(antialias=True)
         self.widget.graphWidget = pg.PlotWidget()
-        self.widget.graphWidget.setTitle('Цикл серцевого скорочення', color='black', size='18pt')
+        self.widget.graphWidget.setTitle('Цикл серцевого скорочення', color='black')
         self.widget.graphWidget.setLabel(axis='bottom', text='Час (мс)', color='black')
         self.widget.graphWidget.setLabel(axis='left', text='Амплітуда (мВ)', color='black')
         self.widget.graphWidget.setMenuEnabled()
@@ -37,7 +55,7 @@ class MainWindow(QMainWindow):
         # generation button
 
         self.widget.button = QPushButton('Генерація')
-        self.widget.button.clicked.connect(self.show_new_window)
+        self.widget.button.clicked.connect(self.show_sequence_window)
         grid.addWidget(self.widget.button, 0, 1, Qt.AlignmentFlag.AlignTop)
 
         # waves radio buttons
@@ -340,6 +358,27 @@ class MainWindow(QMainWindow):
             self.widget.slider_b1.blockSignals(False)
             self.widget.slider_b2.blockSignals(False)
 
-    def show_new_window(self, checked):
-        self.w_new = sw.SequenceWindow(self.ecg_cycle)
-        self.w_new.show()
+    def exit_window(self):
+        QApplication.closeAllWindows()
+    
+    def open_file(self):
+        file, check = QFileDialog.getOpenFileName(self, "Прочитати сигнал ЕКГ", "", "Текстовий файл (*.txt)")
+        if check:
+            f = open(file, 'r')
+            with f:
+                data = f.read()
+
+            data = data.replace('\n', '').split(' ')
+            data = [s.replace(' ', '') for s in data]
+            data = [s for s in data if s!='']
+            data = np.asarray(data).astype(float) / 10000
+
+            self.show_phase_window(data)
+
+    def show_sequence_window(self):
+        self.window_sequence = sw.SequenceWindow(self.ecg_cycle)
+        self.window_sequence.show()
+
+    def show_phase_window(self, data):
+        self.window_phase = pw.PhaseWindow(data)
+        self.window_phase.show()
