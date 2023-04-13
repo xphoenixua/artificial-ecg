@@ -9,7 +9,7 @@ class PhaseWindow(QWidget):
     def __init__(self, data, parent=None):
         super().__init__(parent)
         self.setGeometry(500, 200, 700, 600)
-        self.setWindowTitle('Фільтрація випадкової завади')
+        self.setWindowTitle('Фазові портрети відкритої ЕКГ')
         self.amp_seq = data
 
         # plot widgets
@@ -67,14 +67,14 @@ class PhaseWindow(QWidget):
         
         self.tau = 8
         self.slider_tau.setMinimum(1)
-        self.slider_tau.setMaximum(100)
+        self.slider_tau.setMaximum(50)
         self.slider_tau.setSingleStep(1)
         self.slider_tau.setValue(self.tau)
         self.slider_tau.valueChanged.connect(self.update_tau)
         self.slider_tau_hlayout.addWidget(self.slider_tau)
         
         self.slider_tau_label2 = QLabel()
-        self.slider_tau_label2.setText('80')
+        self.slider_tau_label2.setText('50')
         self.slider_tau_hlayout.addWidget(self.slider_tau_label2)
 
         self.slider_tau_value = QLabel()
