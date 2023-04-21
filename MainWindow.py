@@ -12,6 +12,28 @@ import PhaseWindow as pw
 class MainWindow(QMainWindow):
     def __init__(self, ecg_init, parent=None):
         super().__init__(parent)
+        self.setStyleSheet('''
+        QMainWindow {
+            background-color: #FFFFFF;
+        }
+        QMenuBar {
+            border-bottom: 3px solid #007AD9;
+        }
+        QMenuBar::item {
+            background-color: #007AD9;
+            color: #FFFFFF;
+        }
+        QMenuBar::item:selected {
+            background-color: #005FA8;
+        }
+        QMenuBar::item:pressed {
+            background-color: #007AD9;
+        }
+        QMenu::indicator {
+            background-color: #007AD9;
+            color: #FFFFFF;
+        }
+        ''')
         self.widget = QWidget(self)
         self.setCentralWidget(self.widget)
         self.setWindowTitle('Модель кардіоцикла')
@@ -20,15 +42,26 @@ class MainWindow(QMainWindow):
         # menu bar
 
         menu = QMenuBar(self)
+        menu.setFixedHeight(21)
+        menu.setMouseTracking(True)
         self.setMenuBar(menu)
         menu_file = QMenu('&Файл', self)
         menu.addMenu(menu_file)
 
-        open_action = QAction("&Відкрити...", self)
-        menu_file.addAction(open_action)
-        open_action.triggered.connect(self.open_file)
+        menu_open = QMenu("&Відкрити...", self)
+        menu_file.addMenu(menu_open)
 
-        exit_action = QAction("&Вихід", self)
+        open_cycle_action = QAction("&Цикл", self)
+        menu_open.addAction(open_cycle_action)
+        open_cycle_action.cycle_flag = True
+        open_cycle_action.triggered.connect(self.open_phase_window)
+
+        open_sequence_action = QAction("&Послідовність", self)
+        menu_open.addAction(open_sequence_action)
+        open_sequence_action.cycle_flag = False
+        open_sequence_action.triggered.connect(self.open_phase_window)
+
+        exit_action = QAction("&Вихід із програми", self)
         menu_file.addAction(exit_action)
         exit_action.triggered.connect(self.exit_window)
 
@@ -55,6 +88,22 @@ class MainWindow(QMainWindow):
         # generation button
 
         self.widget.button = QPushButton('Генерація')
+        self.widget.button.setStyleSheet('''
+        QPushButton {
+            background-color: #007AD9;
+            font-size: 14px;
+            font-weight: bold;
+            color: #FFFFFF;
+            border: 2px solid;
+            border-color: #007AD9;
+            padding: 5px;
+            padding-top: 2px;
+        }
+        QPushButton:hover {
+            background-color: #FFFFFF;
+            color: #007AD9;
+        }
+        ''')
         self.widget.button.clicked.connect(self.show_sequence_window)
         grid.addWidget(self.widget.button, 0, 1, Qt.AlignmentFlag.AlignTop)
 
@@ -361,24 +410,27 @@ class MainWindow(QMainWindow):
     def exit_window(self):
         QApplication.closeAllWindows()
     
+    def open_phase_window(self):
+        data = self.open_file()
+        if data is not None:
+            self.show_phase_window(data, self.sender().cycle_flag)
+
     def open_file(self):
         file, check = QFileDialog.getOpenFileName(self, "Прочитати сигнал ЕКГ", "", "Текстовий файл (*.txt)")
         if check:
             f = open(file, 'r')
             with f:
                 data = f.read()
-
             data = data.replace('\n', '').split(' ')
             data = [s.replace(' ', '') for s in data]
             data = [s for s in data if s!='']
             data = np.asarray(data).astype(float) / 10000
-
-            self.show_phase_window(data)
+            return data
 
     def show_sequence_window(self):
         self.window_sequence = sw.SequenceWindow(self.ecg_cycle)
         self.window_sequence.show()
 
-    def show_phase_window(self, data):
-        self.window_phase = pw.PhaseWindow(data)
+    def show_phase_window(self, data, cycle_flag):
+        self.window_phase = pw.PhaseWindow(data, cycle_flag)
         self.window_phase.show()

@@ -12,6 +12,10 @@ class FilterWindow(QWidget):
         super().__init__(parent)
         self.setGeometry(500, 200, 700, 400)
         self.setWindowTitle('Фільтрація випадкової завади')
+        self.setStyleSheet('''
+        QMainWindow {
+            background-color: #FFFFFF;
+        }''')
         self.noisy_ecg_sequence = ecg_sequence
         self.Ts = Ts
 

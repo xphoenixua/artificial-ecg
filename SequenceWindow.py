@@ -12,6 +12,10 @@ class SequenceWindow(QWidget):
         super().__init__(parent)
         self.setGeometry(300, 300, 700, 400)
         self.setWindowTitle('Послідовність кардіоциклів')
+        self.setStyleSheet('''
+        QMainWindow {
+            background-color: #FFFFFF;
+        }''')
         self.raw_ecg_sequence = cs.CycleSequence(ecg_cycle, 30)
         self.noisy_ecg_sequence = self.raw_ecg_sequence
 
@@ -119,6 +123,22 @@ class SequenceWindow(QWidget):
         # filter button
 
         self.button = QPushButton('Згладжування')
+        self.button.setStyleSheet('''
+        QPushButton {
+            background-color: #007AD9;
+            font-size: 14px;
+            font-weight: bold;
+            color: #FFFFFF;
+            border: 2px solid;
+            border-color: #007AD9;
+            padding: 5px;
+            padding-top: 2px;
+        }
+        QPushButton:hover {
+            background-color: #FFFFFF;
+            color: #007AD9;
+        }
+        ''')
         self.button.clicked.connect(self.show_new_window)
         grid.addWidget(self.button, 1, 3)
 
