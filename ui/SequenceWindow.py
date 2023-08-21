@@ -4,26 +4,31 @@ import pyqtgraph as pg
 import numpy as np
 import matplotlib.pyplot as plt
 
-import CycleSequence as cs
-import FilterWindow as fw
+import calculations.CycleSequence as cs
+import ui.FilterWindow as fw
 
+# window of a generated ECG sequence
 class SequenceWindow(QWidget):
     def __init__(self, ecg_cycle, parent=None):
         super().__init__(parent)
+
+        # window styling
         self.setGeometry(300, 300, 700, 400)
-        self.setWindowTitle('Послідовність кардіоциклів')
+        self.setWindowTitle('Cardiocycles sequence')
         self.setStyleSheet('''
-        QMainWindow {
+        QWidget {
             background-color: #FFFFFF;
         }''')
+        
+        # initialize ECG sequence
         self.raw_ecg_sequence = cs.CycleSequence(ecg_cycle, 30)
         self.noisy_ecg_sequence = self.raw_ecg_sequence
 
-        # plot widgets
-
+        # initialize grid for the window
         grid = QGridLayout()
         self.setLayout(grid)
 
+        # initialize graph
         self.graphWidget = pg.PlotWidget()
         self.graphWidget.setLabel(axis='bottom', text='Час (с)', color='black')
         self.graphWidget.setLabel(axis='left', text='Амплітуда (мВ)', color='black')
@@ -38,12 +43,12 @@ class SequenceWindow(QWidget):
 
         grid.addWidget(self.graphWidget, 0, 0, 1, 4)
 
-        # n spinbox
+        # intialize n (number of cycles) spinbox
         
         self.n_group = QGroupBox()
         self.n_layout = QHBoxLayout()
         self.n_group.setLayout(self.n_layout)
-        self.n_group.setTitle('Кількість циклів')
+        self.n_group.setTitle('Number of cycles')
 
         self.n_input = QSpinBox()
         self.n_input.setMinimum(1)
@@ -54,12 +59,12 @@ class SequenceWindow(QWidget):
         
         grid.addWidget(self.n_group, 1, 0)
 
-        # alternation slider
+        # initialize alternation level slider
 
         self.slider_alt = QSlider(Qt.Orientation.Horizontal)
         
         self.alt_group = QGroupBox()
-        self.alt_group.setTitle('Рівень альтерації (мВ)')
+        self.alt_group.setTitle('Alternation level (mV)')
 
         self.alt_vlayout = QVBoxLayout()
         self.alt_group.setLayout(self.alt_vlayout)
@@ -87,12 +92,12 @@ class SequenceWindow(QWidget):
 
         grid.addWidget(self.alt_group, 1, 1)
 
-        # amplitude slider
+        # initialize noise level slider
 
         self.slider_noise = QSlider(Qt.Orientation.Horizontal)
         
         self.slider_noise_group = QGroupBox()
-        self.slider_noise_group.setTitle('Рівень шуму')
+        self.slider_noise_group.setTitle('Noise level')
 
         self.slider_noise_vlayout = QVBoxLayout()
         self.slider_noise_group.setLayout(self.slider_noise_vlayout)
@@ -120,9 +125,9 @@ class SequenceWindow(QWidget):
 
         grid.addWidget(self.slider_noise_group, 1, 2)
 
-        # filter button
+        # initialize filter button
 
-        self.button = QPushButton('Згладжування')
+        self.button = QPushButton('Filter')
         self.button.setStyleSheet('''
         QPushButton {
             background-color: #007AD9;
@@ -142,24 +147,28 @@ class SequenceWindow(QWidget):
         self.button.clicked.connect(self.show_new_window)
         grid.addWidget(self.button, 1, 3)
 
+        # update graph based on all parameters from sliders
         self.on_update(self.raw_ecg_sequence)
 
+    # update points of the graph every time any slider/radiobutton emitted a Qt signal
     def on_update(self, ecg_sequence):
         """ Update the plot with the current input values """
-
         self.points.setData(ecg_sequence.time_seq / 1000, ecg_sequence.amp_seq)
 
+    # rebuild sequence based on scrapped parameters from number of cycles spinbox
     def update_n(self):
         n_new = int(self.n_input.value())
         self.raw_ecg_sequence = cs.CycleSequence(self.raw_ecg_sequence.ecg_cycle, n_new)
         self.update_alt()
 
+    # rebuild cycle based on scrapped parameters from alternation level slider
     def update_alt(self):
         alt = self.slider_alt.value() / 100
         self.slider_alt_value.setText(f'[{alt}]')
         self.raw_ecg_sequence.alternate_t(alt)
         self.update_noise()
     
+    # rebuild cycle based on scrapped parameters from noise level slider
     def update_noise(self):
         noise_level = self.slider_noise.value() / 100
         self.slider_noise_value.setText(f'[{noise_level}]')
@@ -168,11 +177,13 @@ class SequenceWindow(QWidget):
                                                  amp_seq=noisy_amp_seq)
         self.on_update(self.noisy_ecg_sequence)
 
+    # rebuild sequence based on scrapped parameters from passed ecg_cycle
     def to_sequence(self, ecg_cycle):
         self.raw_ecg_sequence = cs.CycleSequence(ecg_cycle, self.raw_ecg_sequence.n)
         self.update_alt()
     
-    def show_new_window(self, checked):
+    # create filtering window when pressed Filter button
+    def show_new_window(self):
         Ts = self.raw_ecg_sequence.ecg_cycle.Ts
         self.w_new = fw.FilterWindow(self.noisy_ecg_sequence, Ts)
         self.w_new.show()

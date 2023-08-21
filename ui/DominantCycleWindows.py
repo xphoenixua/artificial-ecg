@@ -6,16 +6,15 @@ import numpy as np
 
 class DominantCycleWindows:
     def __init__(self, z, dz):
+
+        # initializing passed parameters
         self.z = z
         self.dz = dz
 
-        # grid = QGridLayout()
-        # self.setLayout(grid)
+        # initializing table widget
 
-        # table widget
-        
         self.table_subwindow = QWidget()
-        self.table_subwindow.setWindowTitle('Відстані')
+        self.table_subwindow.setWindowTitle('Distances')
         self.table_subwindow.setStyleSheet('''
         QWidget {
             background-color: #FFFFFF;
@@ -24,7 +23,7 @@ class DominantCycleWindows:
         self.table_subwindow.setLayout(vlayout)
 
         table_title = QLabel()
-        table_title.setText('Відстані Гаусдорфа між циклами')
+        table_title.setText('Hausdorff distance between cycles')
         table_title.setStyleSheet('''
         QLabel {
             font-size: 14px;
@@ -42,11 +41,11 @@ class DominantCycleWindows:
         self.tableWidget.setVerticalHeaderLabels(labels)
         vlayout.addWidget(self.tableWidget)
 
-        # plot widget
+        # initialize graphs
         
         self.graph_subwindow = QWidget()
         self.graph_subwindow.setContentsMargins(10, 10, 10, 10)
-        self.graph_subwindow.setWindowTitle('Фазові портрети циклів')
+        self.graph_subwindow.setWindowTitle('Phase plots of cycles')
         self.graph_subwindow.setStyleSheet('''
         QWidget {
             background-color: #FFFFFF;
@@ -61,17 +60,19 @@ class DominantCycleWindows:
         self.graphWidget.setBackground('w')
         self.graphWidget.showButtons()
         self.graphWidget.showGrid(x=True, y=True, alpha=1)
+        self.graphWidget.addLegend(offset=(-30, 30), labelTextColor=QColor(0,0,0,255))
         self.pen = pg.mkPen(color="k", width=2, style=Qt.PenStyle.SolidLine)
         vlayout.addWidget(self.graphWidget)
 
-        # grid.addWidget(self.graphWidget, 0, 1)
-
+        # perform analysis based on initial conditions
         self.analyze_cycle_phase(self.z, self.dz, self.M)
 
+    # calculate euclidean distance
     def euclidean_distance(self, x_i, x_j, y_i, y_j):
         rho = np.sqrt((x_i - x_j)**2 + (y_i - y_j)**2)
         return rho
 
+    # calculate Hausdorff distance
     def hausdorff_distance(self, x_i, x_j, y_i, y_j, inverted=0):
         if not inverted:
             h = (self.euclidean_distance(x_i, x_j, y_i, y_j)).min(axis=1).max(axis=0)
@@ -79,6 +80,7 @@ class DominantCycleWindows:
             h = (self.euclidean_distance(x_i, x_j, y_i, y_j)).min(axis=0).max(axis=0)
         return h
 
+    # perform linear normalization of passed ECG and its derivative
     def linerar_normalization(self, z, dz, M):
         z_norm = [0] * M
         dz_norm = [0] * M
@@ -91,8 +93,10 @@ class DominantCycleWindows:
             self.phase_plots[m] = self.graphWidget.plot(z_norm[m], dz_norm[m], pen=self.pen)
         return z_norm, dz_norm
     
+    # define dominant cycle
     def analyze_cycle_phase(self, z, dz, M):
         z_norm, dz_norm = self.linerar_normalization(z, dz, M)
+        # Hausdorff distance between all cycles
         H = np.zeros((M, M))
         for i in range(H.shape[0]):
             x_i = z_norm[i].reshape(-1, 1)
@@ -107,17 +111,13 @@ class DominantCycleWindows:
                 self.tableWidget.setItem(i, j, QTableWidgetItem(f'{round(H[i,j], 6)}'))
         H_min = np.argmin(np.sum(H, axis=0))
 
+        # display analysis results on table and graphs
         highlight_pen = pg.mkPen(color="red", width=3, style=Qt.PenStyle.SolidLine)
         self.phase_plots[H_min].clear()
         self.phase_plots.pop(H_min)
-        self.phase_plots.append(self.graphWidget.plot(z_norm[H_min], dz_norm[H_min], pen=highlight_pen))
+        self.phase_plots.append(self.graphWidget.plot(z_norm[H_min], dz_norm[H_min], pen=highlight_pen, name='Dominant cycle'))
         for m in range(self.M):
             self.tableWidget.item(m, H_min).setBackground(QColor(255,143,143))
             self.tableWidget.item(H_min, m).setBackground(QColor(255,143,143))
         self.graph_subwindow.show()
         self.table_subwindow.show()
-
-        
-
-
-

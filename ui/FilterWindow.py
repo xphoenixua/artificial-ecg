@@ -4,29 +4,34 @@ import pyqtgraph as pg
 import numpy as np
 import matplotlib.pyplot as plt
 
-import CycleSequence as cs
-import FilteringAlgorithms as fa
+import calculations.CycleSequence as cs
+import calculations.FilteringAlgorithms as fa
 
+# window of ECG signal filtering
 class FilterWindow(QWidget):
     def __init__(self, ecg_sequence, Ts, parent=None):
         super().__init__(parent)
+
+        # window styling
         self.setGeometry(500, 200, 700, 400)
-        self.setWindowTitle('Фільтрація випадкової завади')
+        self.setWindowTitle('Filtration of random noise')
         self.setStyleSheet('''
-        QMainWindow {
+        QWidget {
             background-color: #FFFFFF;
         }''')
+        
+        # receiving parameters from the sequence window
         self.noisy_ecg_sequence = ecg_sequence
         self.Ts = Ts
 
-        # plot widgets
-
+        # initialize grid for the window
         grid = QGridLayout()
         self.setLayout(grid)
 
+        # initialize graph
         self.graphWidget = pg.PlotWidget()
-        self.graphWidget.setLabel(axis='bottom', text='Час (с)', color='black')
-        self.graphWidget.setLabel(axis='left', text='Амплітуда (мВ)', color='black')
+        self.graphWidget.setLabel(axis='bottom', text='Time (s)', color='black')
+        self.graphWidget.setLabel(axis='left', text='Amplitude (mV)', color='black')
         self.graphWidget.setMenuEnabled()
         self.graphWidget.setBackground('w')
         self.graphWidget.showButtons()
@@ -38,12 +43,11 @@ class FilterWindow(QWidget):
 
         grid.addWidget(self.graphWidget, 0, 0, 1, 3)
 
-        # alpha slider
-        
+        # initialize alpha value slider (exponential filtering)
         self.slider_alpha = QSlider(Qt.Orientation.Horizontal)
         
         self.alpha_group = QGroupBox()
-        self.alpha_group.setTitle('Параметр α')
+        self.alpha_group.setTitle('Parameter α')
 
         self.alpha_vlayout = QVBoxLayout()
         self.alpha_group.setLayout(self.alpha_vlayout)
@@ -72,12 +76,11 @@ class FilterWindow(QWidget):
 
         grid.addWidget(self.alpha_group, 1, 0)
 
-        # window width slider
-
+        # initialize window (filtering) width slider (sliding average filtering)
         self.slider_winwidth = QSlider(Qt.Orientation.Horizontal)
         
         self.winwidth_group = QGroupBox()
-        self.winwidth_group.setTitle('Ширина вікна (мс)')
+        self.winwidth_group.setTitle('Window width (ms)')
 
         self.winwidth_vlayout = QVBoxLayout()
         self.winwidth_group.setLayout(self.winwidth_vlayout)
@@ -106,21 +109,20 @@ class FilterWindow(QWidget):
 
         grid.addWidget(self.winwidth_group, 1, 1)
 
-        # filter radios
-        
+        # initializing radio buttons for switching types of filtering
         self.filter_group = QGroupBox()
-        self.filter_group.setTitle('Алгоритм згладжування')
+        self.filter_group.setTitle('Filtering method')
 
         self.filter_vlayout = QVBoxLayout()
         self.filter_group.setLayout(self.filter_vlayout)
 
-        self.exp_filter = QRadioButton('Експоненційне')
+        self.exp_filter = QRadioButton('Exponential')
         self.exp_filter.type = 'exponential'
         self.exp_filter.toggled.connect(self.on_clicked)
         self.filter_vlayout.addWidget(self.exp_filter)
 
-        self.moving_avg = QRadioButton('Ковзне середнє')
-        self.moving_avg.type = 'moving_average'
+        self.moving_avg = QRadioButton('Sliding average')
+        self.moving_avg.type = 'sliding_average'
         self.moving_avg.toggled.connect(self.on_clicked)
         self.filter_vlayout.addWidget(self.moving_avg)
 
@@ -130,19 +132,21 @@ class FilterWindow(QWidget):
 
         self.on_update(self.noisy_ecg_sequence)
 
+    # update points of the graph every time any slider/radiobutton emitted a Qt signal
     def on_update(self, ecg_sequence):
         """ Update the plot with the current input values """
-
         self.points.setData(ecg_sequence.time_seq / 1000, ecg_sequence.amp_seq)
 
+    # perform sliding average filtering based on scrapped parameters from window width slider
     def update_winwidth(self):
         winwidth = self.slider_winwidth.value()
         self.slider_winwidth_value.setText(f'[{winwidth}]')
-        filtered_amp_seq = fa.moving_average(self.noisy_ecg_sequence, winwidth)
+        filtered_amp_seq = fa.sliding_average(self.noisy_ecg_sequence, winwidth)
         filtered_ecg_sequence = cs.CycleSequence(time_seq=self.noisy_ecg_sequence.time_seq,
                                                  amp_seq=filtered_amp_seq)
         self.on_update(filtered_ecg_sequence)
 
+    # perform exponential filtering based on scrapped parameters from alpha value slider
     def update_alpha(self):
         alpha = self.slider_alpha.value() / 100
         self.slider_alpha_value.setText(f'[{alpha}]')
@@ -151,18 +155,20 @@ class FilterWindow(QWidget):
                                                  amp_seq=filtered_amp_seq)
         self.on_update(filtered_ecg_sequence)
 
+    # set the only active radiobutton with self.active_radio attribute for the window
     def on_clicked(self):
         radio = self.sender()
         if radio.isChecked():
             self.active_radio = radio
             self.set_slider_modes()
 
+    # activate neccessary filtering method and set the other one as disabled
     def set_slider_modes(self):
         if self.active_radio.type == 'exponential':
             self.slider_alpha.setEnabled(True)
             self.slider_winwidth.setEnabled(False)
             self.update_alpha()
-        elif self.active_radio.type == 'moving_average':
+        elif self.active_radio.type == 'sliding_average':
             self.slider_winwidth.setEnabled(True)
             self.slider_alpha.setEnabled(False)
             self.update_winwidth()

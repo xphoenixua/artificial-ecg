@@ -4,14 +4,17 @@ from PyQt6.QtGui import *
 import pyqtgraph as pg
 import numpy as np
 
-import CycleModel as cm
-import SequenceWindow as sw
-import CycleSequence as cs
-import PhaseWindow as pw
+import calculations.CycleModel as cm
+import ui.SequenceWindow as sw
+import calculations.CycleSequence as cs
+import ui.PhaseWindow as pw
 
+# main window of ECG cycle
 class MainWindow(QMainWindow):
     def __init__(self, ecg_init, parent=None):
         super().__init__(parent)
+
+        # window styling
         self.setStyleSheet('''
         QMainWindow {
             background-color: #FFFFFF;
@@ -36,46 +39,46 @@ class MainWindow(QMainWindow):
         ''')
         self.widget = QWidget(self)
         self.setCentralWidget(self.widget)
-        self.setWindowTitle('Модель кардіоцикла')
+        self.setWindowTitle('Cardiocycle model')
+
+        # initialize ECG cycle
         self.ecg_cycle = ecg_init
 
-        # menu bar
-
+        # initialize menu bar
         menu = QMenuBar(self)
         menu.setFixedHeight(21)
         menu.setMouseTracking(True)
         self.setMenuBar(menu)
-        menu_file = QMenu('&Файл', self)
+        menu_file = QMenu('&File', self)
         menu.addMenu(menu_file)
 
-        menu_open = QMenu("&Відкрити...", self)
+        menu_open = QMenu("&Open...", self)
         menu_file.addMenu(menu_open)
 
-        open_cycle_action = QAction("&Цикл", self)
+        open_cycle_action = QAction("&Cycle", self)
         menu_open.addAction(open_cycle_action)
         open_cycle_action.cycle_flag = True
         open_cycle_action.triggered.connect(self.open_phase_window)
 
-        open_sequence_action = QAction("&Послідовність", self)
+        open_sequence_action = QAction("&Sequence", self)
         menu_open.addAction(open_sequence_action)
         open_sequence_action.cycle_flag = False
         open_sequence_action.triggered.connect(self.open_phase_window)
 
-        exit_action = QAction("&Вихід із програми", self)
+        exit_action = QAction("&Exit", self)
         menu_file.addAction(exit_action)
         exit_action.triggered.connect(self.exit_window)
 
-        # plot widgets
-
+        # initialize grid for the window
         grid = QGridLayout()
-
         self.widget.setLayout(grid)
         
-        # pg.setConfigOptions(antialias=True)
+        # initialize graph
+        pg.setConfigOptions(antialias=True) # True for fancy, False for fast graphs
         self.widget.graphWidget = pg.PlotWidget()
-        self.widget.graphWidget.setTitle('Цикл серцевого скорочення', color='black')
-        self.widget.graphWidget.setLabel(axis='bottom', text='Час (мс)', color='black')
-        self.widget.graphWidget.setLabel(axis='left', text='Амплітуда (мВ)', color='black')
+        self.widget.graphWidget.setTitle('Heart contraction cycle', color='black')
+        self.widget.graphWidget.setLabel(axis='bottom', text='Time (ms)', color='black')
+        self.widget.graphWidget.setLabel(axis='left', text='Amplitude (mV)', color='black')
         self.widget.graphWidget.setMenuEnabled()
         self.widget.graphWidget.setBackground('w')
         self.widget.graphWidget.showButtons()
@@ -85,9 +88,8 @@ class MainWindow(QMainWindow):
 
         grid.addWidget(self.widget.graphWidget, 0, 0, 3, 1)
 
-        # generation button
-
-        self.widget.button = QPushButton('Генерація')
+        # intiialize button for generating a sequence from the created cycle
+        self.widget.button = QPushButton('Generate')
         self.widget.button.setStyleSheet('''
         QPushButton {
             background-color: #007AD9;
@@ -107,12 +109,12 @@ class MainWindow(QMainWindow):
         self.widget.button.clicked.connect(self.show_sequence_window)
         grid.addWidget(self.widget.button, 0, 1, Qt.AlignmentFlag.AlignTop)
 
-        # waves radio buttons
+        # initializing radio buttons for switching which ECG wave to configure
 
         self.widget.radio_group = QGroupBox()
         self.widget.radio_layout = QVBoxLayout()
         self.widget.radio_group.setLayout(self.widget.radio_layout)
-        self.widget.radio_group.setTitle('Зубець')
+        self.widget.radio_group.setTitle('Wave')
         self.widget.radio_group.setFixedHeight(250)
 
         self.widget.radiobutton = QRadioButton('P')
@@ -148,14 +150,14 @@ class MainWindow(QMainWindow):
 
         grid.addWidget(self.widget.radio_group, 1, 1, Qt.AlignmentFlag.AlignVCenter)
 
-        # Fh spinbox
+        # initialize heart rate spinbox
         
         self.widget.fh_group = QGroupBox()
         self.widget.fh_layout = QHBoxLayout()
         self.widget.fh_group.setLayout(self.widget.fh_layout)
         self.widget.fh_group.setFixedWidth(70)
         self.widget.fh_group.setFixedHeight(60)
-        self.widget.fh_group.setTitle('FH [уд./хв]')
+        self.widget.fh_group.setTitle('Fh [beats/minute]')
 
         self.widget.fh_input = QSpinBox()
         self.widget.fh_input.setMinimum(30)
@@ -167,11 +169,10 @@ class MainWindow(QMainWindow):
         
         grid.addWidget(self.widget.fh_group, 2, 1, Qt.AlignmentFlag.AlignHCenter)
         
-        # a and mu grid
-
+        # initialize grid for amplitude and mu value
         self.widget.slider_a_mu_hlayout = QHBoxLayout()
 
-        # amplitude slider
+        # intiialize amplitude slider
 
         self.widget.slider_a = QSlider(Qt.Orientation.Horizontal)
         
@@ -204,7 +205,7 @@ class MainWindow(QMainWindow):
         
         self.widget.slider_a_mu_hlayout.addWidget(self.widget.slider_a_group)
 
-        # mean slider
+        # initialize mu (mean) slider
 
         self.widget.slider_mu = QSlider(Qt.Orientation.Horizontal)
         
@@ -233,18 +234,18 @@ class MainWindow(QMainWindow):
 
         self.widget.slider_a_mu_hlayout.addWidget(self.widget.slider_mu_group)
 
-        # a and mu grid
+        # add amplitude and mu grid to layout
 
         grid.addLayout(self.widget.slider_a_mu_hlayout, 3, 0, 1, 2)
 
-        # b group
+        # initialize group of sliders for configuring standard deviation to the left and right of the mean value
 
         self.widget.slider_b_group = QGroupBox()
         self.widget.slider_b_hlayout = QHBoxLayout()
         self.widget.slider_b_group.setLayout(self.widget.slider_b_hlayout)
-        self.widget.slider_b_group.setTitle('Середньоквадратичне (мс)')
+        self.widget.slider_b_group.setTitle('Standard deviation (ms)')
 
-        # b1 slider
+        # initialize left (b1) std side slider
         
         self.widget.slider_b1_group = QGroupBox()
         self.widget.slider_b1_group.setTitle('b1')
@@ -270,7 +271,7 @@ class MainWindow(QMainWindow):
 
         self.widget.slider_b_hlayout.addWidget(self.widget.slider_b1_group)
 
-        # b2 slider
+        # initialize right (b2) std side slider
         
         self.widget.slider_b2_group = QGroupBox()
         self.widget.slider_b2_group.setTitle('b2')
@@ -298,24 +299,30 @@ class MainWindow(QMainWindow):
         
         grid.addWidget(self.widget.slider_b_group, 4, 0, 1, 2)
         
+        # update sliders based on intitial conditions of the cycle (from Run.py)
         self.update_sliders()
+        # update graph based on all parameters from sliders
         self.on_update()
 
+    # getter for cycle wave
     def get_wave_data(self, index):
         return self.ecg_cycle.waves[self.active_radio.wave][index]
 
+    # setter for cycle wave
     def set_wave_data(self, data, index):
         self.ecg_cycle.waves[self.active_radio.wave][index] = data
 
+    # update points of the graph every time any slider/radiobutton emitted a Qt signal
     def on_update(self):
         """ Update the plot with the current input values """
-
         self.ecg_cycle.construct_cycle()
         self.points.setData(self.ecg_cycle.time, self.ecg_cycle.amplitude)
 
-        if hasattr(self, 'w_new'):
-            self.w_new.to_sequence(self.ecg_cycle)
+        # we want to mirror any changes to the cycle to the generated sequence
+        if hasattr(self, 'window_sequence'):
+            self.window_sequence.to_sequence(self.ecg_cycle)
 
+    # rebuild cycle based on scrapped parameters from heart rate spinbox
     def update_fh(self):
         Fh_new = self.widget.fh_input.value()
         self.ecg_cycle.fh_normalization(Fh_new)
@@ -324,31 +331,40 @@ class MainWindow(QMainWindow):
         self.update_sliders()
         self.on_update()
 
+    # rebuild cycle based on scrapped parameters from amplitude slider
     def update_a(self):
         self.set_wave_data(self.widget.slider_a.value() / 100, 0)
         self.widget.slider_a_value.setText(f'[{self.widget.slider_a.value() / 100}]')
         self.on_update()
     
+    # rebuild cycle based on scrapped parameters from mean slider
     def update_mu(self):
         self.set_wave_data(self.widget.slider_mu.value(), 1)
+        # because we changed mean, we also need to recalculate possible std range for the wave
         self.set_b_range()
         self.widget.slider_mu_value.setText(f'[{self.widget.slider_mu.value()}]')
         self.on_update()
     
+    # rebuild cycle based on scrapped parameters from left side std slider
     def update_b1(self):
         self.set_wave_data(self.widget.slider_b1.value(), 2)
+        # because we changed std, we also need to recalculate possible mean range for the wave
         self.set_mu_range()
         self.widget.slider_b1_value.setText(f'[{self.widget.slider_b1.value()}]')
         self.on_update()
     
+    # rebuild cycle based on scrapped parameters from right side std slider
     def update_b2(self):
         self.set_wave_data(self.widget.slider_b2.value(), 3)
+        # because we changed std, we also need to recalculate possible mean range for the wave
         self.set_mu_range()
         self.widget.slider_b2_value.setText(f'[{self.widget.slider_b2.value()}]')
         self.on_update()
 
+    # reflect changes to sliders to labels and internal signal data
     def update_sliders(self):
         if hasattr(self.widget, 'slider_a'):
+            # block signals to stop calls to updating functions
             self.block_signals(True)
             self.widget.slider_a.setValue(np.ceil(self.get_wave_data(0) * 100).astype(int))
             self.widget.slider_a_value.setText(f'[{self.widget.slider_a.value() / 100}]')
@@ -360,10 +376,12 @@ class MainWindow(QMainWindow):
             self.widget.slider_b1_value.setText(f'[{self.widget.slider_b1.value()}]')
             self.widget.slider_b2.setValue(np.ceil(self.get_wave_data(3)).astype(int))
             self.widget.slider_b2_value.setText(f'[{self.widget.slider_b2.value()}]')
+            # let Qt listen to signals from UI elements again
             self.block_signals(False)
         else:
             return
 
+    # update possible range for mean value slider
     def set_mu_range(self):
         if hasattr(self.widget, 'slider_mu'):
             m_b, m_e = self.ecg_cycle.find_range_mu(self.active_radio.wave)
@@ -374,6 +392,7 @@ class MainWindow(QMainWindow):
         else:
             return
 
+    # update possible range for std value sliders
     def set_b_range(self):
         if hasattr(self.widget, 'slider_b1'):
             b1_b, b1_e = self.ecg_cycle.find_range_b1(self.active_radio.wave)
@@ -391,12 +410,15 @@ class MainWindow(QMainWindow):
         else:
             return
 
+    # set the only active radiobutton with self.active_radio attribute for the window
     def on_clicked(self):
         radio = self.sender()
         if radio.isChecked():
             self.active_radio = radio
+            # make sure everything is updated to prevent any data leaps
             self.update_sliders()
 
+    # helper function for stopping Qt from listening to emitted signals
     def block_signals(self, block):
         if block:
             self.widget.slider_mu.blockSignals(True)
@@ -407,14 +429,17 @@ class MainWindow(QMainWindow):
             self.widget.slider_b1.blockSignals(False)
             self.widget.slider_b2.blockSignals(False)
 
+    # exit program
     def exit_window(self):
         QApplication.closeAllWindows()
     
+    # when opened a .txt signal file in menu
     def open_phase_window(self):
         data = self.open_file()
         if data is not None:
             self.show_phase_window(data, self.sender().cycle_flag)
 
+    # open a .txt signal file
     def open_file(self):
         file, check = QFileDialog.getOpenFileName(self, "Прочитати сигнал ЕКГ", "", "Текстовий файл (*.txt)")
         if check:
@@ -427,10 +452,12 @@ class MainWindow(QMainWindow):
             data = np.asarray(data).astype(float) / 10000
             return data
 
+    # create sequence window when pressed Generate button
     def show_sequence_window(self):
         self.window_sequence = sw.SequenceWindow(self.ecg_cycle)
         self.window_sequence.show()
 
+    # create phase window when opened a .txt signal file in menu
     def show_phase_window(self, data, cycle_flag):
         self.window_phase = pw.PhaseWindow(data, cycle_flag)
         self.window_phase.show()
