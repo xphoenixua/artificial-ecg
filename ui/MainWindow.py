@@ -157,7 +157,7 @@ class MainWindow(QMainWindow):
         self.widget.fh_group.setLayout(self.widget.fh_layout)
         self.widget.fh_group.setFixedWidth(70)
         self.widget.fh_group.setFixedHeight(60)
-        self.widget.fh_group.setTitle('Fh [beats/minute]')
+        self.widget.fh_group.setTitle('Fh [bpm]')
 
         self.widget.fh_input = QSpinBox()
         self.widget.fh_input.setMinimum(30)

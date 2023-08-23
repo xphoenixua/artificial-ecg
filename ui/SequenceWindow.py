@@ -30,8 +30,8 @@ class SequenceWindow(QWidget):
 
         # initialize graph
         self.graphWidget = pg.PlotWidget()
-        self.graphWidget.setLabel(axis='bottom', text='Час (с)', color='black')
-        self.graphWidget.setLabel(axis='left', text='Амплітуда (мВ)', color='black')
+        self.graphWidget.setLabel(axis='bottom', text='Time (s)', color='black')
+        self.graphWidget.setLabel(axis='left', text='Amplitude (mV)', color='black')
         self.graphWidget.setMenuEnabled()
         self.graphWidget.setBackground('w')
         self.graphWidget.showButtons()
