@@ -177,7 +177,7 @@ class MainWindow(QMainWindow):
         self.widget.slider_a = QSlider(Qt.Orientation.Horizontal)
         
         self.widget.slider_a_group = QGroupBox()
-        self.widget.slider_a_group.setTitle('Амплітуда (мВ)')
+        self.widget.slider_a_group.setTitle('Amplitude (mV)')
         
         self.widget.slider_a_vlayout = QVBoxLayout()
         self.widget.slider_a_group.setLayout(self.widget.slider_a_vlayout)
@@ -210,7 +210,7 @@ class MainWindow(QMainWindow):
         self.widget.slider_mu = QSlider(Qt.Orientation.Horizontal)
         
         self.widget.slider_mu_group = QGroupBox()
-        self.widget.slider_mu_group.setTitle('Середнє (мс)')
+        self.widget.slider_mu_group.setTitle('Mean (ms)')
 
         self.widget.slider_mu_vlayout = QVBoxLayout()
         self.widget.slider_mu_group.setLayout(self.widget.slider_mu_vlayout)

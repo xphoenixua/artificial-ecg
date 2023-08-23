@@ -11,8 +11,8 @@ def exp_filter(ecg_sequence, alpha):
         z0_tilda[k] = z0_tilda[k-1] + alpha * (z0[k] - z0_tilda[k-1])
     return z0_tilda
 
-# define moving average filtering algorithm
-def moving_average(ecg_sequence, winwidth):
+# define sliding average filtering algorithm
+def sliding_average(ecg_sequence, winwidth):
     z0 = ecg_sequence.amp_seq
     W0_ms = winwidth
     Ts = cm.CycleModel.Ts

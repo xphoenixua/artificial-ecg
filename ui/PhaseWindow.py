@@ -43,7 +43,7 @@ class PhaseWindow(QMainWindow):
         ''')
         self.widget = QWidget(self)
         self.setCentralWidget(self.widget)
-        self.setWindowTitle('Фазові портрети відкритої ЕКГ')
+        self.setWindowTitle('Opened ECG')
 
         # initialize ECG sequence
         self.z = [data]
@@ -76,9 +76,9 @@ class PhaseWindow(QMainWindow):
         
         self.widget.time_domain_plot = self.widget.graphLayout.addPlot(row=0, col=0, rowspan=3, colspan=1)
         self.widget.time_domain_points = self.widget.time_domain_plot.plot(pen=self.widget.pen)
-        self.widget.time_domain_plot.setTitle('ЕКГ', color='black')
-        self.widget.time_domain_plot.setLabel(axis='bottom', text='Час (с)', color='black')
-        self.widget.time_domain_plot.setLabel(axis='left', text='Амплітуда (мВ)', color='black')
+        self.widget.time_domain_plot.setTitle('Time domain', color='black')
+        self.widget.time_domain_plot.setLabel(axis='bottom', text='Time (s)', color='black')
+        self.widget.time_domain_plot.setLabel(axis='left', text='Amplitude (mV)', color='black')
         self.widget.time_domain_plot.showGrid(x=True, y=True, alpha=1)
 
         # initialize add cycle button
@@ -119,14 +119,14 @@ class PhaseWindow(QMainWindow):
 
         self.widget.phase_plot = self.widget.graphLayout.addPlot(row=3, col=0, colspan=2)
         self.widget.phase_points = self.widget.phase_plot.plot(pen=self.widget.pen)
-        self.widget.phase_plot.setTitle('Фазовий портрет ЕКГ', color='black')
+        self.widget.phase_plot.setTitle('Phase domain', color='black')
         self.widget.phase_plot.setLabel(axis='bottom', text='z(t)', color='black')
         self.widget.phase_plot.setLabel(axis='left', text="z '(t)", color='black')
         self.widget.phase_plot.showGrid(x=True, y=True, alpha=1)
 
         self.widget.pseudophase_plot = self.widget.graphLayout.addPlot(row=4, col=0, colspan=2)
         self.widget.pseudophase_points = self.widget.pseudophase_plot.plot(pen=self.widget.pen)
-        self.widget.pseudophase_plot.setTitle('Псевдофазовий портрет ЕКГ', color='black')
+        self.widget.pseudophase_plot.setTitle('Pseudophase domain', color='black')
         self.widget.pseudophase_plot.setLabel(axis='bottom', text='z(t)', color='black')
         self.widget.pseudophase_plot.setLabel(axis='left', text="z(t-𝜏)", color='black')
         self.widget.pseudophase_plot.showGrid(x=True, y=True, alpha=1)
