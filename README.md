@@ -15,35 +15,35 @@ This project embraces such features and functions:
 ## Previews
 
 ### Construct ECG cycle | [back to top ↑](#a-project-that-lets-you-interact-with-artificially-generated-ecg-signal)
-![construct ECG cycle](assets\construct_eeg_cycle.png)
+![construct ECG cycle](assets/construct_eeg_cycle.png)
 
 ### Generate ECG sequence | [back to top ↑](#a-project-that-lets-you-interact-with-artificially-generated-ecg-signal)
 
-![generate ECG sequence](assets\generate_ecg_sequence.png)
+![generate ECG sequence](assets/generate_ecg_sequence.png)
 
 ### Add random noise | [back to top ↑](#a-project-that-lets-you-interact-with-artificially-generated-ecg-signal)
 
-![add random noise](assets\add_noise.png)
+![add random noise](assets/add_noise.png)
 
 ### Filter ECG sequence | [back to top ↑](#a-project-that-lets-you-interact-with-artificially-generated-ecg-signal)
 
-![exponential filter](assets\exponential_filter.png)
-![exponential filter](assets\sliding_average_filter.png)
+![exponential filter](assets/exponential_filter.png)
+![exponential filter](assets/sliding_average_filter.png)
 
 ### Add alternation | [back to top ↑](#a-project-that-lets-you-interact-with-artificially-generated-ecg-signal)
 
-![add alternation](assets\add_alternation.png) 
+![add alternation](assets/add_alternation.png) 
 
 ### Open ECG | [back to top ↑](#a-project-that-lets-you-interact-with-artificially-generated-ecg-signal)
 
-![open ECG](assets\open_ecg.png)
+![open ECG](assets/open_ecg.png)
 
 ### Plot ECG | [back to top ↑](#a-project-that-lets-you-interact-with-artificially-generated-ecg-signal)
 
-![plot ECG](assets\plot_ecg.png)
+![plot ECG](assets/plot_ecg.png)
 
 ### Define dominant cycle | [back to top ↑](#a-project-that-lets-you-interact-with-artificially-generated-ecg-signal)
 
-![analyzing cycle option](assets\analyzing_option.png)
+![analyzing cycle option](assets/analyzing_option.png)
 
-![define dominant cycle](assets\dominant_cycle.png)
+![define dominant cycle](assets/dominant_cycle.png)
