@@ -12,6 +12,8 @@ This project embraces such features and functions:
  - [plot ECG in time, phase and pseudophase domains](#plot-ecg--back-to-top-↑)
  - [define dominant cycle of ECG sequence](#define-dominant-cycle--back-to-top-↑) (pattern of ECG that is most prominently visible on the ECG tracing; the cycle that is the closest to all other cycles of ECG sequence based on Hausdorff distance)
 
+[PyQtGraph](https://www.pyqtgraph.org/) was used for plotting ECG signals insead of Matplotlib for performance boosting and better integration with PyQt purposes. One can disable autoaliasing with `pg.setConfigOptions(antialias=False)` and achieve even faster interactive graphs experience. However, PyQtGraph uses some Matplotlib dependencies so you need to install it anyway.
+
 ## Previews
 
 ### Construct ECG cycle | [back to top ↑](#a-project-that-lets-you-interact-with-artificially-generated-ecg-signal)
